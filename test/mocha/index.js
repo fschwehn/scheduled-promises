@@ -7,8 +7,10 @@ const pkg = require('../../index')
     , Job = pkg.Job
     , Scheduler = pkg.Scheduler
 
+// --------------------------------------
 describe('Class Job', () => {
-  describe('launch', () => {
+// --------------------------------------
+  describe('#launch', () => {
     it('should return a resolved promise by default', function() {
       let p = new Job().launch()
       assert(p instanceof Promise)
@@ -16,7 +18,7 @@ describe('Class Job', () => {
     })
   })
   
-  describe('makePromise', () => {
+  describe('#makePromise', () => {
     it('immediately resolved', function() {
       return new Job({
         makePromise: () => Promise.resolve()
@@ -31,9 +33,32 @@ describe('Class Job', () => {
       }).launch()
     })
   })
+  
+  describe('#nextLaunchDate', () => {
+    it('depends on .launchInterval', () => {
+      const j = new Job({
+        lastLaunchDate: new Date(5000),
+        launchInterval: 1000,
+      })
+      
+      assert.equal(j.nextLaunchDate().valueOf(), 6000)
+    })
+    
+    it('is null when paused', () => {
+      const j = new Job({
+        lastLaunchDate: new Date(5000),
+        launchInterval: 1000,
+        paused: true
+      })
+      
+      assert.isNull(j.nextLaunchDate())
+    })
+  })
 })
 
+// --------------------------------------
 describe('Class Scheduler', () => {
+// --------------------------------------
   describe('@iterator', () => {
     it ('iterates over jobs', () => {
       let s = new Scheduler()
@@ -58,6 +83,27 @@ describe('Class Scheduler', () => {
         new Scheduler()
           .addJob({ id: 'a' })
           .addJob({ id: 'b' })
+      })
+    })
+    
+    it('launch repeatedly', function() {
+      return new Promise((resolve, reject) => {
+        let numLaunches = 0
+        const s = new Scheduler()
+          .addJob({
+            id: 'a',
+            launchInterval: 5,
+            makePromise: () => {
+              return Promise
+                .resolve()
+                .then(() => {
+                  if (++numLaunches == 5) {
+                    s.job('a').paused = true
+                    resolve()
+                  }
+                })
+            }
+          })
       })
     })
   })

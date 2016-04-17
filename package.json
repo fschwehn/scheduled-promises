@@ -1,10 +1,12 @@
 {
   "name": "scheduled-promises",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Promise based task scheduler",
   "main": "index.js",
   "scripts": {
-    "test": "mocha test/mocha"
+    "test": "mocha test/mocha",
+    "testdev": "mocha test/mocha --watch",
+    "testmin": "mocha test/mocha --watch --reporter min"
   },
   "repository": {
     "type": "git",
