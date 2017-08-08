@@ -1,6 +1,6 @@
 {
   "name": "scheduled-promises",
-  "version": "0.0.7777777",
+  "version": "0.0.8",
   "description": "Promise based task scheduler",
   "main": "index.js",
   "scripts": {
